@@ -1,6 +1,7 @@
 const express = require('express')
 const router = new express.Router()
 const User = require('../models/user')
+const auth = require('../middelware/auth')
 
 router.post('/users', async(req, res)=>{
     // const user = User.build(req.body)
@@ -24,11 +25,14 @@ router.post('/users/login', async(req, res)=>{
         res.send({code : 1, message: 'Logged in Successfully!', data: {user, token} })
     } catch (e) {
         console.log(e);
-        res.status(404).send({ code: 0, message: 'Cant log in' , e})
+        res.status(404).send({ code: 0, message: `Can't log in` , e})
     }
 
 })
 
+router.get('/users', auth, async (req, res) => {
+    res.send(req.user)
+  })
 
 router.post('/users/login/reset', async(req, res) => {
 
