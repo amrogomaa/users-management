@@ -2,10 +2,11 @@ const { DataTypes } = require('sequelize')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+require('dotenv').config()
 const sequelize = require('../db/sequalize')
 
 
-const User = sequelize.define('User', {//attributes starts from here !
+const User = sequelize.define('User', {//attributes starts from here !    
         firstName: { 
             type: DataTypes.STRING,
              allowNull: false 
@@ -22,7 +23,7 @@ const User = sequelize.define('User', {//attributes starts from here !
          email: {
                 type: DataTypes.STRING,
                 allowNull:false,
-                unique: true,
+                // unique: true,
                 validate(value) {
                     if (!validator.isEmail(value)) {
                         throw new Error('Email is invalid')
@@ -87,11 +88,11 @@ User.addHook('beforeSave', async(user, options)=>{
 // we use the regular function expression because the arrow function doesnot bind this keyword
 User.prototype.generateAuthToken = async function(){
     const user = this
-    const token = jwt.sign({ username: user.username }, 'IamAmrGomaa')
+    const token = jwt.sign({ username: user.username }, `${process.env.JWT_KEY}`)
     user.tokens = [...user.tokens, token]
 
     await user.save()
-    return token
+    return  token
 }
 
 // when logging in check first if this user have an account already

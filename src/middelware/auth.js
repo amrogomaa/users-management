@@ -5,7 +5,7 @@ const User = require('../models/user')
 const auth = async(req, res, next) => {
     try{
         const token = req.header('Authorization').replace('Bearer ', '')
-        const decoded = jwt.verify(token, 'IamAmrGomaa')
+        const decoded = jwt.verify(token, `${process.env.JWT_KEY}`)
         const user = await User.findOne({ username : decoded.username })
 
         if(!user){
@@ -15,7 +15,7 @@ const auth = async(req, res, next) => {
         userTokens = user.dataValues.tokens.split(';')
         const tokenIsExist = userTokens.find(tok => tok === token)
 
-        if(tokenIsExist == undefined){
+        if(tokenIsExist === undefined){
             throw new Error('Please Authenticate !')
         }
 

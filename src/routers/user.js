@@ -2,6 +2,7 @@ const express = require('express')
 const router = new express.Router()
 const User = require('../models/user')
 const auth = require('../middelware/auth')
+const {sendWelcomeMail, sendCancelationMail} = require('../emails/sendmail')
 
 router.post('/users', async(req, res)=>{
     // const user = User.build(req.body)
@@ -10,11 +11,11 @@ router.post('/users', async(req, res)=>{
     try{
         await user.save();
         const token = await user.generateAuthToken()
+        sendWelcomeMail(user.email, user.firstname, token)
         res.status(201).send({message:'Created Successfully !', token})
-    }catch(e){
+    } catch(e){
         console.log(e);
         res.status(500).send(e);
-
     }
 })
 
@@ -34,7 +35,7 @@ router.get('/users', auth, async (req, res) => {
     res.send(req.user)
   })
 
-router.post('/users/login/reset', async(req, res) => {
+router.post('/forget', async(req, res) => {
 
 })
 
